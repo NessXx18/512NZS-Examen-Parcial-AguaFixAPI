@@ -3,6 +3,7 @@ import * as env from 'env-var';
 
 export const envs = {
   port: env.get('PORT').default('3000').asPortNumber(),
+  corsOrigin: env.get('CORS_ORIGIN').default('').asString(),
   database: {
     host: env.get('DB_HOST').required().asString(),
     port: env.get('DB_PORT').default('5432').asPortNumber(),

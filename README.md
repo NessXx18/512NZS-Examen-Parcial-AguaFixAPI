@@ -11,6 +11,13 @@ API para recibir reportes ciudadanos de fugas de agua y avisar a la cuadrilla po
 
 `synchronize` permanece desactivado; la estructura se administra mediante migraciones.
 
+## Seguridad
+
+- `.env` y cualquier variante local se excluyen de Git; usa únicamente `.env.example` como plantilla.
+- La API aplica encabezados de seguridad con Helmet y un límite global de 60 solicitudes por minuto por IP.
+- `POST /auth/login` está limitado a 5 intentos por minuto por IP.
+- CORS permanece desactivado salvo que se defina `CORS_ORIGIN` (admite varios orígenes separados por comas).
+
 ## Endpoints
 
 - `POST /auth/register`: `{ "name", "email", "password", "isNotificationEnabled?" }`
