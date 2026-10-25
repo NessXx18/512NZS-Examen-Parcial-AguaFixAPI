@@ -1,6 +1,8 @@
 # AguaFix II: configuración y entrega
 
-El código está preparado en esta carpeta a partir del repositorio del primer parcial, conservando su historial. Todavía debes crear Docker Hub y S3, configurar los secretos, publicar con un push y grabar el video. No hay credenciales reales en los archivos de ejemplo.
+El proyecto ya está publicado en el mismo repositorio del primer parcial y en Docker Hub (`1nxzz/aguafix-api:latest`). GitHub Actions terminó correctamente; S3 y la autenticación SMTP de Gmail fueron verificados. AguaFix y PostgreSQL quedaron detenidos conservando los datos.
+
+**Para terminar desde el estado actual, sigue [GUIA_VIDEO.md](GUIA_VIDEO.md).** Incluye el cambio que debes grabar, commit, push, Actions, Docker Hub, arranque, Bruno, S3, correo y enlaces de entrega. No necesitas repetir la creación de cuentas, secrets o `.env` descrita abajo; esas secciones quedan como referencia de instalación.
 
 ## 1. Crear Docker Hub
 
@@ -136,14 +138,14 @@ npm run start:dev
 
 La nueva migración agrega columnas sin borrar reportes ni usuarios; `synchronize` continúa en `false`. Los reportes anteriores conservan sus datos y tendrán `photoUrl: null` y `repairPhotoUrl: null`. Cada reporte nuevo exige foto y obtiene una URL. No se solicita un endpoint de foto de reparación; por ahora ese campo permanece en `null`.
 
-## 7. Probar en Postman
+## 7. Probar en Bruno
 
-Importa `postman/AguaFix-II.postman_collection.json`. Usa `baseUrl=http://localhost:3000` y selecciona tu fotografía en el campo `photo` antes de enviar.
+En Bruno crea una colección **AguaFix II** y, desde **··· → New Request**, agrega una petición HTTP. También puedes importar el archivo existente `postman/AguaFix-II.postman_collection.json` mediante **+ → Import Collection**, seleccionando el formato **Postman Collection**; Bruno admite ese formato. Si lo importas, usa `baseUrl=http://localhost:3000` y selecciona tu fotografía en el campo `photo` antes de enviar.
 
 Para crear manualmente la petición:
 
 1. Selecciona **POST** a `http://localhost:3000/reports`.
-2. En **Body**, selecciona **form-data**.
+2. En **Body**, selecciona **Multipart Form**.
 3. Agrega las siguientes filas:
 
 | Key | Tipo | Ejemplo |
@@ -154,7 +156,7 @@ Para crear manualmente la petición:
 | `reporterPhone` | Text | 4771234567 |
 | `photo` | File | Selecciona una foto JPEG, PNG o WebP de hasta 5 MB |
 
-4. No escribas manualmente el encabezado `Content-Type`; Postman agrega el `boundary` de multipart.
+4. En la versión instalada las columnas son **Key, Value, Content-Type y Description**. Para `photo`, usa el icono de carga (flecha hacia arriba sobre una bandeja) dentro de **Value** y selecciona una sola fotografía. Escribe los demás valores como texto, deja **Content-Type** en **Auto** y **Description** vacío. No escribas manualmente el encabezado `Content-Type`; Bruno agrega el `boundary` de multipart. Guarda con **Ctrl+S**.
 5. Envía. Debes recibir **201** con `photoUrl` pública y `repairPhotoUrl: null`.
 6. Abre `photoUrl` en una ventana privada: debe mostrar la imagen sin iniciar sesión en AWS.
 7. En S3, abre tu bucket y `reports/`: muestra el objeto recién creado.
@@ -162,7 +164,7 @@ Para crear manualmente la petición:
 9. Envía **GET** a `/reports` y comprueba ambos campos de foto.
 10. Prueba enviar sin `photo`: debe responder **400**. Una foto vacía, formato incorrecto o campos inválidos también se rechazan. Una carga mayor de 5 MB responde **413**.
 
-Para confirmar el primer parcial, prueba también `POST /auth/register` y `POST /auth/login`; están incluidos en la colección. Establece las variables `testEmail` y `testPassword` (mínimo 6 caracteres) en Postman. El registro sigue usando contraseñas cifradas y la respuesta no muestra la contraseña.
+Para confirmar el primer parcial, prueba también `POST /auth/register` y `POST /auth/login` con cuerpo JSON; están incluidos en la colección importable. Si usas esa colección, establece las variables `testEmail` y `testPassword` (mínimo 6 caracteres) en Bruno. El registro sigue usando contraseñas cifradas y la respuesta no muestra la contraseña.
 
 ## 8. Video: orden obligatorio
 
@@ -171,7 +173,7 @@ Graba la pantalla mostrando, en este orden y sin mostrar secretos:
 1. **Código, commit y push a main:** el cambio visible y los comandos del paso 5.
 2. **GitHub Actions:** la ejecución iniciada por ese push, primero en progreso y después en verde; abre el paso de publicar imagen.
 3. **Docker Hub:** el repositorio `aguafix-api`, el tag `latest` y su fecha/hora de última publicación actualizada.
-4. **API, S3 y correo:** ejecuta Compose con la imagen recién publicada; muestra el POST multipart en Postman con la foto y respuesta 201, el objeto en `reports/` de S3 y el correo recibido con la foto visible.
+4. **API, S3 y correo:** ejecuta Compose con la imagen recién publicada; muestra el POST multipart en Bruno con la foto y respuesta 201, el objeto en `reports/` de S3 y el correo recibido con la foto visible.
 
 También puedes mostrar GET y la respuesta 400 al quitar la foto como evidencia adicional, después de completar el orden solicitado.
 

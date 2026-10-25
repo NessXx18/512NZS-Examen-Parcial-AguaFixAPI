@@ -62,6 +62,6 @@ npm run test:postgres
 
 `npm run test:postgres` requiere Docker activo: crea un PostgreSQL temporal con contraseña aleatoria, comprueba las migraciones y la persistencia de las URLs, conserva registros anteriores, verifica la reversión y elimina su contenedor al terminar. No se conecta a tu base existente.
 
-Importa `postman/AguaFix-II.postman_collection.json` en Postman y selecciona una foto local en `photo`. Para registro/login establece las variables `testEmail` y `testPassword` (mínimo 6 caracteres).
+Para el video usa **Bruno** siguiendo `GUIA_VIDEO.md`: crea el POST a `/reports`, selecciona **Body → Multipart Form** y adjunta la imagen en `photo` mediante el icono de carga de la columna **Value**. También puedes importar `postman/AguaFix-II.postman_collection.json` en Bruno desde **+ → Import Collection**, con formato **Postman Collection**. Para registro/login establece las variables `testEmail` y `testPassword` (mínimo 6 caracteres).
 
 La caché `.npm-cache` heredada del repositorio original deja de estar versionada. `.env` nunca debe agregarse a Git ni a la imagen.
