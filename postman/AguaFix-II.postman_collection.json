@@ -1,0 +1,74 @@
+{
+  "info": {
+    "name": "AguaFix II - Fotos S3",
+    "description": "Selecciona una foto local en el campo photo antes de enviar. No agregues Content-Type manualmente. No contiene credenciales reales.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "testEmail", "value": "ciudadano@example.com" },
+    { "key": "testPassword", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Crear reporte CON foto (201)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/reports",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "address", "value": "Calle Hidalgo 123, Centro", "type": "text" },
+            { "key": "description", "value": "Fuga de agua en la banqueta", "type": "text" },
+            { "key": "severity", "value": "high", "type": "text" },
+            { "key": "reporterPhone", "value": "4771234567", "type": "text" },
+            { "key": "photo", "type": "file", "src": [] }
+          ]
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Reporte creado', () => pm.response.to.have.status(201));",
+        "pm.test('Incluye ambas fotos', () => { const r = pm.response.json(); pm.expect(r.photoUrl).to.match(/^https:\\/\\/.*\\/reports\\//); pm.expect(r.repairPhotoUrl).to.eql(null); });"
+      ] } }]
+    },
+    {
+      "name": "2. Listar reportes (200)",
+      "request": { "method": "GET", "url": "{{baseUrl}}/reports" },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Lista de reportes', () => { pm.response.to.have.status(200); pm.expect(pm.response.json()).to.be.an('array'); });",
+        "pm.test('Cada reporte incluye campos de foto', () => pm.response.json().forEach(r => { pm.expect(r).to.have.property('photoUrl'); pm.expect(r).to.have.property('repairPhotoUrl'); }));"
+      ] } }]
+    },
+    {
+      "name": "3. Crear SIN foto (400)",
+      "request": {
+        "method": "POST", "url": "{{baseUrl}}/reports",
+        "body": { "mode": "formdata", "formdata": [
+          { "key": "address", "value": "Calle Hidalgo 123", "type": "text" },
+          { "key": "description", "value": "Fuga sin adjunto", "type": "text" },
+          { "key": "severity", "value": "low", "type": "text" },
+          { "key": "reporterPhone", "value": "4771234567", "type": "text" }
+        ] }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Foto obligatoria', () => pm.response.to.have.status(400));"
+      ] } }]
+    },
+    {
+      "name": "4. Registro primer parcial (establece testPassword)",
+      "request": {
+        "method": "POST", "url": "{{baseUrl}}/auth/register",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Ciudadano de prueba\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}", "options": { "raw": { "language": "json" } } }
+      }
+    },
+    {
+      "name": "5. Login primer parcial",
+      "request": {
+        "method": "POST", "url": "{{baseUrl}}/auth/login",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}", "options": { "raw": { "language": "json" } } }
+      }
+    }
+  ]
+}

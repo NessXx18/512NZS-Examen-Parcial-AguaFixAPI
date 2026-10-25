@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 import { envs } from '../config/envs';
 import { User } from '../users/entities/user.entity';
 import { Report } from '../reports/entities/report.entity';
+import { join } from 'node:path';
 
 export default new DataSource({
   type: 'postgres',
@@ -12,6 +13,6 @@ export default new DataSource({
   password: envs.database.password,
   database: envs.database.name,
   entities: [User, Report],
-  migrations: ['src/database/migrations/*.ts'],
+  migrations: [join(__dirname, 'migrations', '*{.ts,.js}')],
   synchronize: false,
 });

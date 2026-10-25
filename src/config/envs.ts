@@ -4,6 +4,10 @@ import * as env from 'env-var';
 export const envs = {
   port: env.get('PORT').default('3000').asPortNumber(),
   corsOrigin: env.get('CORS_ORIGIN').default('').asString(),
+  storage: {
+    region: env.get('AWS_REGION').required().asString(),
+    bucket: env.get('AWS_S3_BUCKET').required().asString(),
+  },
   database: {
     host: env.get('DB_HOST').required().asString(),
     port: env.get('DB_PORT').default('5432').asPortNumber(),

@@ -17,6 +17,13 @@ export class Report {
   @Column({ length: 30 })
   reporterPhone!: string;
 
+  // Nullable para conservar reportes creados en el primer parcial.
+  @Column({ type: 'text', nullable: true })
+  photoUrl!: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  repairPhotoUrl!: string | null;
+
   @Column({ default: false })
   isResolved!: boolean;
 

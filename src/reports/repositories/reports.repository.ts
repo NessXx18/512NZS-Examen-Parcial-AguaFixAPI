@@ -8,8 +8,8 @@ import { Report } from '../entities/report.entity';
 export class ReportsRepository {
   constructor(@InjectRepository(Report) private readonly repository: Repository<Report>) {}
 
-  async create(dto: CreateReportDto): Promise<Report> {
-    return this.repository.save(this.repository.create(dto));
+  async create(dto: CreateReportDto, photoUrl: string): Promise<Report> {
+    return this.repository.save(this.repository.create({ ...dto, photoUrl, repairPhotoUrl: null }));
   }
 
   findAll(): Promise<Report[]> {

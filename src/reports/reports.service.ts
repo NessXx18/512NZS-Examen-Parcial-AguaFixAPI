@@ -5,20 +5,23 @@ import { CreateReportDto } from './dto/create-report.dto';
 import { Report } from './entities/report.entity';
 import { ReportsRepository } from './repositories/reports.repository';
 import { generateReportTemplate } from './templates/report.template';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable()
 export class ReportsService {
   constructor(
     private readonly reportsRepository: ReportsRepository,
     private readonly emailService: EmailService,
+    private readonly storageService: StorageService,
   ) {}
 
-  async create(dto: CreateReportDto): Promise<Report> {
-    const report = await this.reportsRepository.create(dto);
+  async create(dto: CreateReportDto, photo: Express.Multer.File): Promise<Report> {
+    const photoUrl = await this.storageService.uploadFile(photo, 'reports/');
+    const report = await this.reportsRepository.create(dto, photoUrl);
     await this.emailService.sendEmail(
       envs.mail.maintenanceEmail,
       `Nueva fuga de agua: ${dto.severity}`,
-      generateReportTemplate(dto),
+      generateReportTemplate(dto, photoUrl),
     );
     return report;
   }
